@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>رامین برگر</title>
+  <meta name="description" content="رامین برگر — لایه‌لایه‌ی خوشمزگی، از آتیش تا میز. برگرهای دست‌ساز، هات‌داگ، پیتزا و پیش‌غذا.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ================= هیرو ================= -->
+  <header class="hero" id="top">
+    <div class="hero-bg">
+      <video id="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/hero-poster.jpg" aria-label="ویدیوی مونتاژ برگر">
+        <source src="assets/hero-bg.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-shade"></div>
+    <div class="hero-content">
+      <span class="hero-kicker">فست‌فود دست‌ساز</span>
+      <h1><span data-brand>رامین برگر</span></h1>
+      <p class="tagline" data-tagline>لایه‌لایه‌ی خوشمزگی، از آتیش تا میز</p>
+      <div class="hero-ctas">
+        <a href="#menu" class="btn btn-primary">دیدن منو</a>
+        <a href="#builder" class="btn btn-ghost">برگرت رو بساز</a>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true">
+      <div class="mouse"></div>
+      <span>اسکرول کن</span>
+    </div>
+  </header>
+
+  <!-- ================= مواد اولیه ================= -->
+  <section class="ingredients" id="ingredients">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>مواد <span class="accent">تازه</span>، هر روز</h2>
+        <p>همه‌چی از بهترینش؛ نون داغ، گوشت گریل، پنیر آب‌شده و سبزیجات تازه.</p>
+      </div>
+      <div class="ing-stage" id="ing-stage"></div>
+    </div>
+  </section>
+
+  <!-- ================= مونتاژ اسکرول‌محور ================= -->
+  <section class="assembly" id="assembly">
+    <div class="assembly-sticky">
+      <h2 class="assembly-title">تماشا کن چطور <span class="accent">ساخته</span> می‌شه</h2>
+      <canvas id="assembly-canvas" aria-label="مونتاژ لایه‌به‌لایه‌ی برگر با اسکرول"></canvas>
+      <div class="stage-caption" id="stage-caption"><span>اول، نون تازه‌ی بریوش</span></div>
+      <div class="assembly-progress" id="assembly-progress"><i></i></div>
+      <div class="load-hint" id="load-hint" aria-hidden="true">در حال بارگذاری فریم‌ها…</div>
+    </div>
+  </section>
+
+  <!-- ================= منو ================= -->
+  <section class="menu" id="menu">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>منوی <span class="accent">رامین</span></h2>
+        <p>هرچی دلت بخواد، داغ و تازه.</p>
+      </div>
+      <div class="menu-cats" id="menu-root"></div>
+    </div>
+  </section>
+
+  <!-- ================= برگرساز ================= -->
+  <section class="builder" id="builder">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>برگرت رو <span class="accent">خودت</span> بساز</h2>
+        <p>یه برگر پایه انتخاب کن، مخلفات رو اضافه کن، قیمت رو زنده ببین.</p>
+      </div>
+      <div class="builder-box reveal">
+        <div class="builder-label">۱. برگر پایه</div>
+        <div class="base-grid" id="base-grid"></div>
+        <div class="builder-label">۲. مخلفات اضافه</div>
+        <div class="extras-grid" id="extras-grid"></div>
+        <div class="builder-total">
+          <div class="builder-price">
+            <small>جمع برگر دست‌سازت</small>
+            <span class="val" id="builder-price"></span>
+          </div>
+          <button class="btn btn-primary" id="builder-add" type="button">افزودن به سبد</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= فوتر ================= -->
+  <footer>
+    <div class="f-brand"><span data-brand>رامین برگر</span></div>
+    <p class="f-info"><span data-address>آدرس به‌زودی اعلام می‌شود</span> — <span data-hours>هر روز از ساعت ۱۲ تا ۲۴</span></p>
+    <a class="f-phone" href="tel:+989120000000" data-phone>09120000000</a>
+    <p class="f-copy">ساخته‌شده با عشق به برگر</p>
+  </footer>
+
+  <!-- ================= سبد خرید ================= -->
+  <button class="cart-fab" id="cart-fab" aria-label="باز کردن سبد خرید">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="21" r="1"></circle>
+      <circle cx="20" cy="21" r="1"></circle>
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+    </svg>
+    <span class="cart-count hidden" id="cart-count">۰</span>
+  </button>
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="سبد خرید">
+    <div class="cart-head">
+      <h3>سبد خرید</h3>
+      <button class="cart-close" id="cart-close" aria-label="بستن سبد">×</button>
+    </div>
+    <div class="cart-body" id="cart-body"></div>
+    <div class="cart-foot" id="cart-foot">
+      <div class="cart-total"><span>جمع کل</span><span class="val" id="cart-total-val"></span></div>
+      <button class="btn btn-primary" id="checkout-btn" type="button">ثبت سفارش در واتساپ</button>
+      <p class="cart-note">سفارشت با واتساپ برای ما ارسال می‌شه</p>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast"><span></span></div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
