@@ -19,7 +19,7 @@
 
   /* ---------- ابزار اعداد و قیمت محلی ---------- */
   const locNum = n => Number(n).toLocaleString(L().locale);
-  const locPrice = n => locNum(n) + " " + L().currency;
+  const locPrice = n => L().currencyAfter ? locNum(n) + " " + L().currency : L().currency + locNum(n);
   const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------- نام‌های محلی از روی شناسه ---------- */

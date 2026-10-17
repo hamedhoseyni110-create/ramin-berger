@@ -9,6 +9,7 @@ const I18N = {
     dir: "rtl",
     locale: "fa-IR",
     currency: "تومان",
+    currencyAfter: true,
     listSep: "، ",
     brand: {
       name: "رامین برگر",
@@ -95,7 +96,8 @@ const I18N = {
   en: {
     dir: "ltr",
     locale: "en-US",
-    currency: "Toman",
+    currency: "$",
+    currencyAfter: false,
     listSep: ", ",
     brand: {
       name: "Ramin Burger",
@@ -182,7 +184,8 @@ const I18N = {
   ar: {
     dir: "rtl",
     locale: "ar-EG",
-    currency: "تومان",
+    currency: "$",
+    currencyAfter: true,
     listSep: "، ",
     brand: {
       name: "برجر رامين",
