@@ -297,6 +297,30 @@ section { position: relative; }
 .builder-price small { display: block; font-size: 0.85rem; color: var(--muted); font-weight: 400; }
 .builder-price .val { color: var(--accent); }
 
+/* ---------- سوییچر زبان ---------- */
+.lang-switch {
+  position: fixed; top: 1rem; inset-inline-end: 1rem; z-index: 80;
+  display: flex; gap: 2px;
+  background: rgba(12, 9, 6, 0.72);
+  border: 1px solid rgba(240, 168, 50, 0.35);
+  border-radius: 999px;
+  padding: 4px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.lang-switch button {
+  border: none; background: transparent; cursor: pointer;
+  color: var(--muted);
+  font-family: var(--font); font-size: 0.8rem; font-weight: 700;
+  padding: 0.35rem 0.75rem; border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.lang-switch button:hover { color: var(--text); }
+.lang-switch button.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #1a1005;
+}
+
 /* ---------- سبد خرید ---------- */
 .cart-fab {
   position: fixed; bottom: 1.4rem; left: 1.4rem; z-index: 60;

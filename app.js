@@ -1,21 +1,97 @@
 /* ============================================================
    رامین برگر — منطق سایت (بدون هیچ درخواست خارجی)
+   سه‌زبانه: فارسی / انگلیسی / عربی — با سوییچر زبان
    ============================================================ */
 (function () {
   "use strict";
 
-  /* ---------- ابزار اعداد فارسی ---------- */
-  const faNum = n => Number(n).toLocaleString("fa-IR");
-  const faPrice = n => faNum(n) + " تومان";
+  /* ---------- زبان فعلی ---------- */
+  const LANGS = ["fa", "en", "ar"];
+  let LANG = "fa";
+  try {
+    const qp = new URLSearchParams(location.search).get("lang");
+    const saved = localStorage.getItem("ramin-burger-lang");
+    if (qp && LANGS.includes(qp)) LANG = qp;
+    else if (saved && LANGS.includes(saved)) LANG = saved;
+  } catch (e) {}
+  const L = () => I18N[LANG] || I18N.fa;
+  const ui = k => (L().ui[k] !== undefined ? L().ui[k] : I18N.fa.ui[k]);
+
+  /* ---------- ابزار اعداد و قیمت محلی ---------- */
+  const locNum = n => Number(n).toLocaleString(L().locale);
+  const locPrice = n => locNum(n) + " " + L().currency;
   const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- اعمال برند از کانفیگ ---------- */
-  document.title = CONFIG.brand.name + " | " + CONFIG.brand.tagline;
-  document.querySelectorAll("[data-brand]").forEach(el => { el.textContent = CONFIG.brand.name; });
-  document.querySelectorAll("[data-tagline]").forEach(el => { el.textContent = CONFIG.brand.tagline; });
-  document.querySelectorAll("[data-phone]").forEach(el => { el.textContent = CONFIG.contact.phoneDisplay; });
-  document.querySelectorAll("[data-address]").forEach(el => { el.textContent = CONFIG.contact.address; });
-  document.querySelectorAll("[data-hours]").forEach(el => { el.textContent = CONFIG.contact.hours; });
+  /* ---------- نام‌های محلی از روی شناسه ---------- */
+  function catName(id) {
+    const c = CONFIG.menu.find(c => c.id === id);
+    return (L().categories && L().categories[id]) || (c && c.name) || id;
+  }
+  function itemName(id) {
+    let fb = null;
+    for (const c of CONFIG.menu) { const it = c.items.find(i => i.id === id); if (it) { fb = it.name; break; } }
+    return (L().items && L().items[id]) || fb || id;
+  }
+  function itemPrice(id) {
+    for (const c of CONFIG.menu) { const it = c.items.find(i => i.id === id); if (it) return it.price; }
+    return 0;
+  }
+  function extraName(id) {
+    const ex = CONFIG.builder.extras.find(e => e.id === id);
+    return (L().extras && L().extras[id]) || (ex && ex.name) || id;
+  }
+  function extraPrice(id) {
+    const ex = CONFIG.builder.extras.find(e => e.id === id);
+    return ex ? ex.price : 0;
+  }
+  function ingName(id) {
+    const ing = CONFIG.assets.ingredients.find(i => i.id === id);
+    return (L().ingredients && L().ingredients[id] && L().ingredients[id][0]) || (ing && ing.name) || id;
+  }
+  function ingDesc(id) {
+    const ing = CONFIG.assets.ingredients.find(i => i.id === id);
+    return (L().ingredients && L().ingredients[id] && L().ingredients[id][1]) || (ing && ing.desc) || "";
+  }
+
+  /* ---------- اعمال متن‌های ثابت ---------- */
+  function renderStatic() {
+    document.documentElement.lang = LANG;
+    document.documentElement.dir = L().dir;
+    document.title = L().brand.name + " | " + L().brand.tagline;
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute("content", L().brand.description);
+
+    document.querySelectorAll("[data-brand]").forEach(el => { el.textContent = L().brand.name; });
+    document.querySelectorAll("[data-phone]").forEach(el => { el.textContent = CONFIG.contact.phoneDisplay; });
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const k = el.getAttribute("data-i18n");
+      let v;
+      if (k === "tagline") v = L().brand.tagline;
+      else if (k === "address") v = L().contact.address;
+      else if (k === "hours") v = L().contact.hours;
+      else v = ui(k);
+      if (v !== undefined) el.textContent = v;
+    });
+    document.querySelectorAll("[data-i18n-aria]").forEach(el => {
+      el.setAttribute("aria-label", ui(el.getAttribute("data-i18n-aria")));
+    });
+    // عنوان‌های سه‌تکه با accent
+    document.querySelectorAll("[data-i18n-title]").forEach(el => {
+      const segs = L().titles[el.getAttribute("data-i18n-title")] || I18N.fa.titles[el.getAttribute("data-i18n-title")];
+      if (!segs) return;
+      el.textContent = "";
+      el.append(document.createTextNode(segs[0]));
+      const ac = document.createElement("span");
+      ac.className = "accent";
+      ac.textContent = segs[1];
+      el.append(ac, document.createTextNode(segs[2]));
+    });
+    // وضعیت فعال سوییچر
+    document.querySelectorAll(".lang-switch [data-lang]").forEach(b => {
+      b.classList.toggle("active", b.getAttribute("data-lang") === LANG);
+    });
+  }
 
   /* ---------- پیام شناور ---------- */
   const toastEl = document.getElementById("toast");
@@ -29,127 +105,138 @@
 
   /* ---------- مواد اولیه ---------- */
   const ingStage = document.getElementById("ing-stage");
-  CONFIG.assets.ingredients.forEach(ing => {
-    const card = document.createElement("div");
-    card.className = "ing-card reveal";
-    const floater = document.createElement("div");
-    floater.className = "ing-float";
-    const photo = document.createElement("div");
-    photo.className = "ing-photo";
-    const img = document.createElement("img");
-    img.src = ing.src; img.alt = ing.name; img.loading = "lazy";
-    photo.appendChild(img);
-    const h3 = document.createElement("h3"); h3.textContent = ing.name;
-    const p = document.createElement("p"); p.textContent = ing.desc;
-    floater.append(photo, h3, p);
-    card.appendChild(floater);
-    ingStage.appendChild(card);
-  });
+  function renderIngredients() {
+    ingStage.innerHTML = "";
+    CONFIG.assets.ingredients.forEach(ing => {
+      const card = document.createElement("div");
+      card.className = "ing-card reveal visible";
+      const floater = document.createElement("div");
+      floater.className = "ing-float";
+      const photo = document.createElement("div");
+      photo.className = "ing-photo";
+      const img = document.createElement("img");
+      img.src = ing.src; img.alt = ingName(ing.id); img.loading = "lazy";
+      photo.appendChild(img);
+      const h3 = document.createElement("h3"); h3.textContent = ingName(ing.id);
+      const p = document.createElement("p"); p.textContent = ingDesc(ing.id);
+      floater.append(photo, h3, p);
+      card.appendChild(floater);
+      ingStage.appendChild(card);
+    });
+    // اتصال دوباره‌ی پارالاکس به کارت‌های تازه
+    ingCards = [...document.querySelectorAll(".ing-card")];
+  }
 
   /* ---------- منو ---------- */
   const menuRoot = document.getElementById("menu-root");
-  CONFIG.menu.forEach(cat => {
-    const catEl = document.createElement("div");
-    catEl.className = "menu-cat reveal";
+  function renderMenu() {
+    menuRoot.innerHTML = "";
+    CONFIG.menu.forEach(cat => {
+      const catEl = document.createElement("div");
+      catEl.className = "menu-cat reveal visible";
 
-    const photoWrap = document.createElement("div");
-    photoWrap.className = "menu-cat-photo";
-    const img = document.createElement("img");
-    img.src = cat.photo; img.alt = cat.name; img.loading = "lazy";
-    const name = document.createElement("div");
-    name.className = "menu-cat-name"; name.textContent = cat.name;
-    photoWrap.append(img, name);
+      const photoWrap = document.createElement("div");
+      photoWrap.className = "menu-cat-photo";
+      const img = document.createElement("img");
+      img.src = cat.photo; img.alt = catName(cat.id); img.loading = "lazy";
+      const name = document.createElement("div");
+      name.className = "menu-cat-name"; name.textContent = catName(cat.id);
+      photoWrap.append(img, name);
 
-    const itemsWrap = document.createElement("div");
-    itemsWrap.className = "menu-items";
-    cat.items.forEach(item => {
-      const row = document.createElement("div");
-      row.className = "menu-item";
-      const info = document.createElement("div");
-      info.className = "info";
-      const nm = document.createElement("div"); nm.className = "name"; nm.textContent = item.name;
-      info.appendChild(nm);
-      const price = document.createElement("div"); price.className = "price"; price.textContent = faPrice(item.price);
-      const add = document.createElement("button");
-      add.className = "btn btn-primary btn-small"; add.textContent = "افزودن";
-      add.addEventListener("click", () => {
-        Cart.add({ id: item.id, name: item.name, price: item.price, extras: [] });
-        toast("«" + item.name + "» به سبد اضافه شد");
+      const itemsWrap = document.createElement("div");
+      itemsWrap.className = "menu-items";
+      cat.items.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "menu-item";
+        const info = document.createElement("div");
+        info.className = "info";
+        const nm = document.createElement("div"); nm.className = "name"; nm.textContent = itemName(item.id);
+        info.appendChild(nm);
+        const price = document.createElement("div"); price.className = "price"; price.textContent = locPrice(item.price);
+        const add = document.createElement("button");
+        add.className = "btn btn-primary btn-small"; add.textContent = ui("add");
+        add.addEventListener("click", () => {
+          Cart.addMenu(item.id);
+          toast(ui("addedToCart").replace("{name}", itemName(item.id)));
+        });
+        row.append(info, price, add);
+        itemsWrap.appendChild(row);
       });
-      row.append(info, price, add);
-      itemsWrap.appendChild(row);
-    });
 
-    catEl.append(photoWrap, itemsWrap);
-    menuRoot.appendChild(catEl);
-  });
+      catEl.append(photoWrap, itemsWrap);
+      menuRoot.appendChild(catEl);
+    });
+  }
 
   /* ---------- برگرساز ---------- */
   const burgers = CONFIG.menu[0].items;
-  const builderState = { base: burgers[0], extras: new Set() };
+  const builderState = { baseId: burgers[0].id, extras: new Set() };
   const baseGrid = document.getElementById("base-grid");
   const extrasGrid = document.getElementById("extras-grid");
   const builderPriceEl = document.getElementById("builder-price");
 
   function builderTotal() {
-    let t = builderState.base.price;
-    builderState.extras.forEach(id => {
-      const ex = CONFIG.builder.extras.find(e => e.id === id);
-      if (ex) t += ex.price;
-    });
+    let t = itemPrice(builderState.baseId);
+    builderState.extras.forEach(id => { t += extraPrice(id); });
     return t;
   }
   function renderBuilderPrice() {
-    builderPriceEl.textContent = faPrice(builderTotal());
+    builderPriceEl.textContent = locPrice(builderTotal());
+  }
+  function renderBuilder() {
+    baseGrid.innerHTML = "";
+    burgers.forEach(b => {
+      const btn = document.createElement("button");
+      btn.className = "base-card" + (b.id === builderState.baseId ? " selected" : "");
+      btn.type = "button";
+      const nm = document.createElement("span"); nm.className = "b-name"; nm.textContent = itemName(b.id);
+      const pr = document.createElement("span"); pr.className = "b-price"; pr.textContent = locPrice(b.price);
+      btn.append(nm, pr);
+      btn.addEventListener("click", () => {
+        builderState.baseId = b.id;
+        baseGrid.querySelectorAll(".base-card").forEach(c => c.classList.remove("selected"));
+        btn.classList.add("selected");
+        renderBuilderPrice();
+      });
+      baseGrid.appendChild(btn);
+    });
+
+    extrasGrid.innerHTML = "";
+    CONFIG.builder.extras.forEach(ex => {
+      const chip = document.createElement("button");
+      chip.className = "extra-chip" + (builderState.extras.has(ex.id) ? " selected" : "");
+      chip.type = "button";
+      const label = document.createElement("span"); label.textContent = extraName(ex.id);
+      const pr = document.createElement("span"); pr.className = "ep"; pr.textContent = locPrice(ex.price);
+      chip.append(label, pr);
+      chip.addEventListener("click", () => {
+        if (builderState.extras.has(ex.id)) {
+          builderState.extras.delete(ex.id);
+          chip.classList.remove("selected");
+        } else {
+          builderState.extras.add(ex.id);
+          chip.classList.add("selected");
+        }
+        renderBuilderPrice();
+      });
+      extrasGrid.appendChild(chip);
+    });
+    renderBuilderPrice();
   }
 
-  burgers.forEach((b, i) => {
-    const btn = document.createElement("button");
-    btn.className = "base-card" + (i === 0 ? " selected" : "");
-    btn.type = "button";
-    const nm = document.createElement("span"); nm.className = "b-name"; nm.textContent = b.name;
-    const pr = document.createElement("span"); pr.className = "b-price"; pr.textContent = faPrice(b.price);
-    btn.append(nm, pr);
-    btn.addEventListener("click", () => {
-      builderState.base = b;
-      baseGrid.querySelectorAll(".base-card").forEach(c => c.classList.remove("selected"));
-      btn.classList.add("selected");
-      renderBuilderPrice();
-    });
-    baseGrid.appendChild(btn);
-  });
-
-  CONFIG.builder.extras.forEach(ex => {
-    const chip = document.createElement("button");
-    chip.className = "extra-chip"; chip.type = "button";
-    const label = document.createElement("span"); label.textContent = ex.name;
-    const pr = document.createElement("span"); pr.className = "ep"; pr.textContent = faPrice(ex.price);
-    chip.append(label, pr);
-    chip.addEventListener("click", () => {
-      if (builderState.extras.has(ex.id)) {
-        builderState.extras.delete(ex.id);
-        chip.classList.remove("selected");
-      } else {
-        builderState.extras.add(ex.id);
-        chip.classList.add("selected");
-      }
-      renderBuilderPrice();
-    });
-    extrasGrid.appendChild(chip);
-  });
-  renderBuilderPrice();
-
   document.getElementById("builder-add").addEventListener("click", () => {
-    const extraNames = [...builderState.extras].map(id => {
-      const ex = CONFIG.builder.extras.find(e => e.id === id);
-      return ex ? ex.name : "";
-    }).filter(Boolean);
-    const label = extraNames.length ? builderState.base.name + " (دست‌ساز)" : builderState.base.name;
-    Cart.add({ id: "custom-" + Date.now(), name: label, price: builderTotal(), extras: extraNames });
-    toast("برگر دست‌سازت به سبد اضافه شد");
+    Cart.addCustom(builderState.baseId, [...builderState.extras]);
+    toast(ui("customAdded"));
   });
 
   /* ---------- سبد خرید ---------- */
+  function displayName(it) {
+    if (it.kind === "custom") return itemName(it.ref) + " " + ui("customSuffix");
+    return itemName(it.ref) || it.nameFa || "";
+  }
+  function displayExtras(it) {
+    return (it.extras || []).map(extraName);
+  }
   const Cart = {
     items: [],
     load() {
@@ -161,11 +248,20 @@
     save() {
       try { localStorage.setItem("ramin-burger-cart", JSON.stringify(this.items)); } catch (e) {}
     },
-    add(entry) {
-      const key = entry.name + "|" + entry.extras.join("+") + "|" + entry.price;
+    addMenu(menuId) {
+      const price = itemPrice(menuId);
+      const key = "menu|" + menuId + "|" + price;
       const found = this.items.find(i => i.key === key);
       if (found) found.qty += 1;
-      else this.items.push({ key, name: entry.name, price: entry.price, extras: entry.extras.slice(), qty: 1 });
+      else this.items.push({ key, kind: "menu", ref: menuId, nameFa: I18N.fa.items[menuId] || "", extras: [], price, qty: 1 });
+      this.save(); this.render();
+    },
+    addCustom(baseId, extras) {
+      const price = builderTotal();
+      const key = "custom|" + baseId + "|" + extras.slice().sort().join("+") + "|" + price;
+      const found = this.items.find(i => i.key === key);
+      if (found) found.qty += 1;
+      else this.items.push({ key, kind: "custom", ref: baseId, nameFa: "", extras: extras.slice(), price, qty: 1 });
       this.save(); this.render();
     },
     setQty(key, qty) {
@@ -187,13 +283,13 @@
       const countEl = document.getElementById("cart-count");
       body.innerHTML = "";
       const n = this.count();
-      countEl.textContent = faNum(n);
+      countEl.textContent = locNum(n);
       countEl.classList.toggle("hidden", n === 0);
 
       if (this.items.length === 0) {
         const empty = document.createElement("div");
         empty.className = "cart-empty";
-        empty.textContent = "سبدت خالیه — یه چیزی از منو انتخاب کن!";
+        empty.textContent = ui("cartEmpty");
         body.appendChild(empty);
         foot.style.display = "none";
         return;
@@ -204,50 +300,51 @@
         const row = document.createElement("div");
         row.className = "cart-item";
         const info = document.createElement("div"); info.className = "ci-info";
-        const nm = document.createElement("div"); nm.className = "ci-name"; nm.textContent = it.name;
+        const nm = document.createElement("div"); nm.className = "ci-name"; nm.textContent = displayName(it);
         info.appendChild(nm);
-        if (it.extras.length) {
+        const exNames = displayExtras(it);
+        if (exNames.length) {
           const ex = document.createElement("div"); ex.className = "ci-extras";
-          ex.textContent = it.extras.join("، ");
+          ex.textContent = exNames.join(L().listSep);
           info.appendChild(ex);
         }
         const pr = document.createElement("div"); pr.className = "ci-price";
-        pr.textContent = faPrice(it.price * it.qty);
+        pr.textContent = locPrice(it.price * it.qty);
         info.appendChild(pr);
 
         const ctl = document.createElement("div"); ctl.className = "qty-ctl";
-        const minus = document.createElement("button"); minus.textContent = "−"; minus.setAttribute("aria-label", "کم کردن");
+        const minus = document.createElement("button"); minus.textContent = "−"; minus.setAttribute("aria-label", ui("decQty"));
         minus.addEventListener("click", () => this.setQty(it.key, it.qty - 1));
-        const q = document.createElement("span"); q.className = "q"; q.textContent = faNum(it.qty);
-        const plus = document.createElement("button"); plus.textContent = "+"; plus.setAttribute("aria-label", "زیاد کردن");
+        const q = document.createElement("span"); q.className = "q"; q.textContent = locNum(it.qty);
+        const plus = document.createElement("button"); plus.textContent = "+"; plus.setAttribute("aria-label", ui("incQty"));
         plus.addEventListener("click", () => this.setQty(it.key, it.qty + 1));
         ctl.append(minus, q, plus);
 
         const rm = document.createElement("button"); rm.className = "ci-remove"; rm.textContent = "×";
-        rm.setAttribute("aria-label", "حذف");
+        rm.setAttribute("aria-label", ui("removeItem"));
         rm.addEventListener("click", () => this.remove(it.key));
 
         row.append(info, ctl, rm);
         body.appendChild(row);
       });
 
-      document.getElementById("cart-total-val").textContent = faPrice(this.total());
+      document.getElementById("cart-total-val").textContent = locPrice(this.total());
     },
     checkout() {
       if (!this.items.length) return;
-      const lines = ["سلام " + CONFIG.brand.name + "! سفارش من:"];
+      const lines = [ui("orderGreeting").replace("{brand}", L().brand.name)];
       this.items.forEach(it => {
-        let line = "• " + it.name + " × " + faNum(it.qty) + " — " + faPrice(it.price * it.qty);
-        if (it.extras.length) line += " (" + it.extras.join("، ") + ")";
+        let line = "• " + displayName(it) + " × " + locNum(it.qty) + " — " + locPrice(it.price * it.qty);
+        const exNames = displayExtras(it);
+        if (exNames.length) line += " (" + exNames.join(L().listSep) + ")";
         lines.push(line);
       });
-      lines.push("جمع کل: " + faPrice(this.total()));
+      lines.push(ui("orderTotal") + " " + locPrice(this.total()));
       const url = "https://wa.me/" + CONFIG.contact.whatsapp + "?text=" + encodeURIComponent(lines.join("\n"));
       window.open(url, "_blank", "noopener");
     }
   };
   Cart.load();
-  Cart.render();
 
   const drawer = document.getElementById("cart-drawer");
   const overlay = document.getElementById("cart-overlay");
@@ -263,10 +360,12 @@
   const io = new IntersectionObserver(entries => {
     entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add("visible"); io.unobserve(en.target); } });
   }, { threshold: 0.12 });
-  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  function observeReveals() {
+    document.querySelectorAll(".reveal:not(.visible)").forEach(el => io.observe(el));
+  }
 
   /* ---------- پارالاکس مواد ---------- */
-  const ingCards = [...document.querySelectorAll(".ing-card")];
+  let ingCards = [];
   const speeds = [0.06, -0.05, 0.08, -0.06];
   let ticking = false;
   function parallax() {
@@ -283,7 +382,6 @@
   function onScrollParallax() {
     if (!ticking) { ticking = true; requestAnimationFrame(parallax); }
   }
-  // خنثی‌کردن هاور روی موبایل لمسی لازم نیست؛ ترنسفورم پارالاکس با هاور تداخل ندارد چون هاور فقط دسکتاپ است
   window.addEventListener("scroll", onScrollParallax, { passive: true });
   window.addEventListener("resize", onScrollParallax);
 
@@ -303,13 +401,7 @@
   }
 
   /* ---------- مونتاژ اسکرول‌محور (فریم‌سکانس آرگون) ---------- */
-  const STAGES = [
-    { until: 0.18, text: "اول، نون تازه‌ی بریوش" },
-    { until: 0.38, text: "بعد، گوشت گریل آتیشی" },
-    { until: 0.56, text: "پنیر چدار آب‌شده" },
-    { until: 0.76, text: "کاهو و گوجه‌ی تازه" },
-    { until: 1.01, text: "و تمام — برگر آماده‌ست" }
-  ];
+  const STAGE_UNTIL = [0.18, 0.38, 0.56, 0.76, 1.01];
   const canvas = document.getElementById("assembly-canvas");
   const ctx = canvas.getContext("2d");
   const captionEl = document.getElementById("stage-caption").querySelector("span");
@@ -330,10 +422,14 @@
     ctx.drawImage(img, (FW - w) / 2, (FH - h) / 2, w, h);
   }
   function setCaption(p) {
-    const st = STAGES.find(s => p < s.until) || STAGES[STAGES.length - 1];
-    if (captionEl.textContent !== st.text) {
+    const stages = L().stages;
+    let idx = stages.length - 1;
+    for (let i = 0; i < STAGE_UNTIL.length; i++) {
+      if (p < STAGE_UNTIL[i]) { idx = i; break; }
+    }
+    if (captionEl.textContent !== stages[idx]) {
       captionEl.style.opacity = "0";
-      setTimeout(() => { captionEl.textContent = st.text; captionEl.style.opacity = "1"; }, 160);
+      setTimeout(() => { captionEl.textContent = stages[idx]; captionEl.style.opacity = "1"; }, 160);
     }
     progressEl.style.width = (p * 100).toFixed(1) + "%";
   }
@@ -341,8 +437,10 @@
 
   function updateLoadHint() {
     if (!loadHintEl) return;
-    if (loaded >= N) loadHintEl.classList.add("done");
-    else loadHintEl.textContent = "در حال بارگذاری فریم‌ها… " + faNum(loaded) + " از " + faNum(N);
+    if (loaded >= N) { loadHintEl.classList.add("done"); return; }
+    loadHintEl.textContent = ui("loadHint")
+      .replace("{loaded}", locNum(loaded))
+      .replace("{total}", locNum(N));
   }
   function loadFrame(i) {
     return new Promise(resolve => {
@@ -401,4 +499,32 @@
     if ("requestIdleCallback" in window) requestIdleCallback(pump, { timeout: 2000 });
     else setTimeout(pump, 0);
   });
+
+  /* ---------- سوییچر زبان ---------- */
+  function setLang(next, save) {
+    if (!LANGS.includes(next)) return;
+    LANG = next;
+    try {
+      if (save !== false) localStorage.setItem("ramin-burger-lang", LANG);
+    } catch (e) {}
+    try {
+      const u = new URL(location.href);
+      u.searchParams.set("lang", LANG);
+      history.replaceState(null, "", u.toString());
+    } catch (e) {}
+    renderStatic();
+    renderIngredients();
+    renderMenu();
+    renderBuilder();
+    Cart.render();
+    updateLoadHint();
+    captionEl.textContent = ""; // وادار کردن به‌روزرسانی کپشن مرحله
+  }
+  document.querySelectorAll(".lang-switch [data-lang]").forEach(btn => {
+    btn.addEventListener("click", () => setLang(btn.getAttribute("data-lang")));
+  });
+
+  /* ---------- رندر اولیه ---------- */
+  setLang(LANG, false);
+  observeReveals();
 })();
