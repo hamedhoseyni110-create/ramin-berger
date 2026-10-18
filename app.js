@@ -519,6 +519,9 @@
     Cart.render();
     updateLoadHint();
     captionEl.textContent = ""; // وادار کردن به‌روزرسانی کپشن مرحله
+    // پاک کردن تست باقی‌مانده از زبان قبلی
+    clearTimeout(toastTimer);
+    toastEl.classList.remove("show");
   }
   document.querySelectorAll(".lang-switch [data-lang]").forEach(btn => {
     btn.addEventListener("click", () => setLang(btn.getAttribute("data-lang")));
