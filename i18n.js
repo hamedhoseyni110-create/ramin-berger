@@ -17,7 +17,7 @@ const I18N = {
       description: "رامین برگر — لایه‌لایه‌ی خوشمزگی، از آتیش تا میز. برگرهای دست‌ساز، هات‌داگ، پیتزا و پیش‌غذا."
     },
     contact: {
-      address: "آدرس به‌زودی اعلام می‌شود",
+      address: "اصفهان، خیابان پروین، خیابان صباحی، چهارراه سپیده کاشانی",
       hours: "هر روز از ساعت ۱۲ تا ۲۴"
     },
     ui: {
@@ -105,7 +105,7 @@ const I18N = {
       description: "Ramin Burger — layer upon layer of flavor, from fire to table. Handcrafted burgers, hot dogs, pizza and sides."
     },
     contact: {
-      address: "Address coming soon",
+      address: "Sepideh Kashani Crossroads, Sabahi St., Parvin St., Isfahan",
       hours: "Open daily, 12:00–24:00"
     },
     ui: {
@@ -193,7 +193,7 @@ const I18N = {
       description: "برجر رامين — طبقات من النكهة، من النار إلى الطاولة. برجر مصنوع يدويًا وهوت دوج وبيتزا ومقبلات."
     },
     contact: {
-      address: "العنوان قريبًا",
+      address: "أصفهان، شارع بروين، شارع صباحي، تقاطع سبيده كاشاني",
       hours: "يوميًا من ١٢:٠٠ إلى ٢٤:٠٠"
     },
     ui: {
