@@ -299,7 +299,7 @@ section { position: relative; }
 
 /* ---------- سوییچر زبان ---------- */
 .lang-switch {
-  position: fixed; top: 1rem; inset-inline-end: 1rem; z-index: 80;
+  position: fixed; top: 1rem; inset-inline-end: 1rem; z-index: 65;
   display: flex; gap: 2px;
   background: rgba(12, 9, 6, 0.72);
   border: 1px solid rgba(240, 168, 50, 0.35);
