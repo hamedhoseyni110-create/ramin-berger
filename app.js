@@ -13,6 +13,13 @@
     const saved = localStorage.getItem("ramin-burger-lang");
     if (qp && LANGS.includes(qp)) LANG = qp;
     else if (saved && LANGS.includes(saved)) LANG = saved;
+    else if (qp) LANG = "fa"; // ?lang= نامعتبر → بازگشت تمیز به فارسی
+    else {
+      // اولین بازدید بدون زبان ذخیره‌شده: زبان مرورگر
+      const nav = (navigator.language || "").toLowerCase();
+      if (nav.indexOf("ar") === 0) LANG = "ar";
+      else if (nav.indexOf("en") === 0) LANG = "en";
+    }
   } catch (e) {}
   const L = () => I18N[LANG] || I18N.fa;
   const ui = k => (L().ui[k] !== undefined ? L().ui[k] : I18N.fa.ui[k]);
@@ -44,6 +51,17 @@
     const ex = CONFIG.builder.extras.find(e => e.id === id);
     return ex ? ex.price : 0;
   }
+  /* ---------- قیمت‌های دلاری مستقل برای EN/AR (بدون هیچ نرخ تبدیلی) ---------- */
+  const USD_ITEMS = {
+    b1: 9, b2: 13, b3: 11, b4: 14,
+    h1: 8, h2: 9, p1: 12, p2: 13,
+    s1: 4, s2: 6, s3: 7,
+    d1: 2, d2: 2.5, d3: 1.5, d4: 5
+  };
+  const USD_EXTRAS = { e1: 2, e2: 1.5, e3: 3, e4: 2, e5: 1.5 };
+  // قیمت واحد بر اساس زبان فعلی: فارسی → تومان، بقیه → دلار مستقل
+  function menuUnit(id) { return LANG === "fa" ? itemPrice(id) : (USD_ITEMS[id] || 0); }
+  function extraUnit(id) { return LANG === "fa" ? extraPrice(id) : (USD_EXTRAS[id] || 0); }
   function ingName(id) {
     const ing = CONFIG.assets.ingredients.find(i => i.id === id);
     return (L().ingredients && L().ingredients[id] && L().ingredients[id][0]) || (ing && ing.name) || id;
@@ -152,7 +170,7 @@
         info.className = "info";
         const nm = document.createElement("div"); nm.className = "name"; nm.textContent = itemName(item.id);
         info.appendChild(nm);
-        const price = document.createElement("div"); price.className = "price"; price.textContent = locPrice(item.price);
+        const price = document.createElement("div"); price.className = "price"; price.textContent = locPrice(menuUnit(item.id));
         const add = document.createElement("button");
         add.className = "btn btn-primary btn-small"; add.textContent = ui("add");
         add.addEventListener("click", () => {
@@ -176,8 +194,8 @@
   const builderPriceEl = document.getElementById("builder-price");
 
   function builderTotal() {
-    let t = itemPrice(builderState.baseId);
-    builderState.extras.forEach(id => { t += extraPrice(id); });
+    let t = menuUnit(builderState.baseId);
+    builderState.extras.forEach(id => { t += extraUnit(id); });
     return t;
   }
   function renderBuilderPrice() {
@@ -190,7 +208,7 @@
       btn.className = "base-card" + (b.id === builderState.baseId ? " selected" : "");
       btn.type = "button";
       const nm = document.createElement("span"); nm.className = "b-name"; nm.textContent = itemName(b.id);
-      const pr = document.createElement("span"); pr.className = "b-price"; pr.textContent = locPrice(b.price);
+      const pr = document.createElement("span"); pr.className = "b-price"; pr.textContent = locPrice(menuUnit(b.id));
       btn.append(nm, pr);
       btn.addEventListener("click", () => {
         builderState.baseId = b.id;
@@ -207,7 +225,7 @@
       chip.className = "extra-chip" + (builderState.extras.has(ex.id) ? " selected" : "");
       chip.type = "button";
       const label = document.createElement("span"); label.textContent = extraName(ex.id);
-      const pr = document.createElement("span"); pr.className = "ep"; pr.textContent = locPrice(ex.price);
+      const pr = document.createElement("span"); pr.className = "ep"; pr.textContent = locPrice(extraUnit(ex.id));
       chip.append(label, pr);
       chip.addEventListener("click", () => {
         if (builderState.extras.has(ex.id)) {
@@ -249,19 +267,17 @@
       try { localStorage.setItem("ramin-burger-cart", JSON.stringify(this.items)); } catch (e) {}
     },
     addMenu(menuId) {
-      const price = itemPrice(menuId);
-      const key = "menu|" + menuId + "|" + price;
+      const key = "menu|" + menuId;
       const found = this.items.find(i => i.key === key);
       if (found) found.qty += 1;
-      else this.items.push({ key, kind: "menu", ref: menuId, nameFa: I18N.fa.items[menuId] || "", extras: [], price, qty: 1 });
+      else this.items.push({ key, kind: "menu", ref: menuId, nameFa: I18N.fa.items[menuId] || "", extras: [], qty: 1 });
       this.save(); this.render();
     },
     addCustom(baseId, extras) {
-      const price = builderTotal();
-      const key = "custom|" + baseId + "|" + extras.slice().sort().join("+") + "|" + price;
+      const key = "custom|" + baseId + "|" + extras.slice().sort().join("+");
       const found = this.items.find(i => i.key === key);
       if (found) found.qty += 1;
-      else this.items.push({ key, kind: "custom", ref: baseId, nameFa: "", extras: extras.slice(), price, qty: 1 });
+      else this.items.push({ key, kind: "custom", ref: baseId, nameFa: "", extras: extras.slice(), qty: 1 });
       this.save(); this.render();
     },
     setQty(key, qty) {
@@ -276,7 +292,17 @@
       this.save(); this.render();
     },
     count() { return this.items.reduce((s, i) => s + i.qty, 0); },
-    total() { return this.items.reduce((s, i) => s + i.qty * i.price, 0); },
+    // قیمت واحد بر اساس زبان فعلی — همیشه از روی شناسه حل می‌شود تا
+    // سوییچ زبان بعد از افزودن به سبد، قیمت اشتباه نشان ندهد
+    unitPrice(it) {
+      if (it.kind === "custom") {
+        let t = menuUnit(it.ref);
+        (it.extras || []).forEach(id => { t += extraUnit(id); });
+        return t;
+      }
+      return menuUnit(it.ref);
+    },
+    total() { return this.items.reduce((s, i) => s + i.qty * this.unitPrice(i), 0); },
     render() {
       const body = document.getElementById("cart-body");
       const foot = document.getElementById("cart-foot");
@@ -309,7 +335,7 @@
           info.appendChild(ex);
         }
         const pr = document.createElement("div"); pr.className = "ci-price";
-        pr.textContent = locPrice(it.price * it.qty);
+        pr.textContent = locPrice(this.unitPrice(it) * it.qty);
         info.appendChild(pr);
 
         const ctl = document.createElement("div"); ctl.className = "qty-ctl";
@@ -334,7 +360,7 @@
       if (!this.items.length) return;
       const lines = [ui("orderGreeting").replace("{brand}", L().brand.name)];
       this.items.forEach(it => {
-        let line = "• " + displayName(it) + " × " + locNum(it.qty) + " — " + locPrice(it.price * it.qty);
+        let line = "• " + displayName(it) + " × " + locNum(it.qty) + " — " + locPrice(this.unitPrice(it) * it.qty);
         const exNames = displayExtras(it);
         if (exNames.length) line += " (" + exNames.join(L().listSep) + ")";
         lines.push(line);
