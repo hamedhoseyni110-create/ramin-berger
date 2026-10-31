@@ -1,5 +1,5 @@
 /* ============================================================
-   رامین برگر — منطق سایت (بدون هیچ درخواست خارجی)
+   رامی برگر — منطق سایت (بدون هیچ درخواست خارجی)
    سه‌زبانه: فارسی / انگلیسی / عربی — با سوییچر زبان
    ============================================================ */
 (function () {
@@ -79,7 +79,16 @@
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute("content", L().brand.description);
 
-    document.querySelectorAll("[data-brand]").forEach(el => { el.textContent = L().brand.name; });
+    document.querySelectorAll("[data-brand]").forEach(el => {
+      if (el.closest(".hero")) {
+        const b = L().brand;
+        const ramiSpan = '<span class="brand-rami">' + (b.rami || "") + "</span>";
+        const burgerSpan = '<span class="brand-burger">' + (b.burger || "") + "</span>";
+        el.innerHTML = (LANG === "ar") ? (burgerSpan + " " + ramiSpan) : (ramiSpan + " " + burgerSpan);
+      } else {
+        el.textContent = L().brand.name;
+      }
+    });
     document.querySelectorAll("[data-phone]").forEach(el => { el.textContent = CONFIG.contact.phoneDisplay; });
 
     document.querySelectorAll("[data-i18n]").forEach(el => {

@@ -1,5 +1,5 @@
 /* ============================================================
-   رامین برگر — جدول ترجمه‌ها (فارسی / انگلیسی / عربی)
+   رامی برگر — جدول ترجمه‌ها (فارسی / انگلیسی / عربی)
    هر زبان: جهت، لوکییل اعداد، واحد پول، برند، رابط کاربری،
    عنوان‌ها (سه‌تکه با accent)، مراحل مونتاژ، مواد، دسته‌ها،
    آیتم‌ها و مخلفات برگرساز.
@@ -12,9 +12,11 @@ const I18N = {
     currencyAfter: true,
     listSep: "، ",
     brand: {
-      name: "رامین برگر",
+      name: "رامی برگر",
+      rami: "رامی",
+      burger: "برگر",
       tagline: "لایه‌لایه‌ی خوشمزگی، از آتیش تا میز",
-      description: "رامین برگر — لایه‌لایه‌ی خوشمزگی، از آتیش تا میز. برگرهای دست‌ساز، هات‌داگ، پیتزا و پیش‌غذا."
+      description: "رامی برگر — لایه‌لایه‌ی خوشمزگی، از آتیش تا میز. برگرهای دست‌ساز، هات‌داگ، پیتزا و پیش‌غذا."
     },
     contact: {
       address: "اصفهان، خیابان پروین، خیابان صباحی، چهارراه سپیده کاشانی",
@@ -58,7 +60,7 @@ const I18N = {
     titles: {
       ingredients: ["مواد ", "تازه", "، هر روز"],
       assembly: ["تماشا کن چطور ", "ساخته", " می‌شه"],
-      menu: ["منوی ", "رامین", ""],
+      menu: ["منوی ", "رامی", ""],
       builder: ["برگرت رو ", "خودت", " بساز"]
     },
     stages: [
@@ -100,9 +102,11 @@ const I18N = {
     currencyAfter: false,
     listSep: ", ",
     brand: {
-      name: "Ramin Burger",
+      name: "RAMY BURGER",
+      rami: "RAMY",
+      burger: "BURGER",
       tagline: "Layer upon layer of flavor, from fire to table",
-      description: "Ramin Burger — layer upon layer of flavor, from fire to table. Handcrafted burgers, hot dogs, pizza and sides."
+      description: "RAMY BURGER — layer upon layer of flavor, from fire to table. Handcrafted burgers, hot dogs, pizza and sides."
     },
     contact: {
       address: "Sepideh Kashani Crossroads, Sabahi St., Parvin St., Isfahan",
@@ -146,7 +150,7 @@ const I18N = {
     titles: {
       ingredients: ["", "Fresh", " Ingredients, Every Day"],
       assembly: ["Watch How It's ", "Made", ""],
-      menu: ["", "Ramin's", " Menu"],
+      menu: ["", "RAMY's", " Menu"],
       builder: ["", "Build", " Your Own Burger"]
     },
     stages: [
@@ -188,9 +192,11 @@ const I18N = {
     currencyAfter: true,
     listSep: "، ",
     brand: {
-      name: "برجر رامين",
+      name: "برجر رامي",
+      rami: "رامي",
+      burger: "برجر",
       tagline: "طبقات من النكهة، من النار إلى الطاولة",
-      description: "برجر رامين — طبقات من النكهة، من النار إلى الطاولة. برجر مصنوع يدويًا وهوت دوج وبيتزا ومقبلات."
+      description: "برجر رامي — طبقات من النكهة، من النار إلى الطاولة. برجر مصنوع يدويًا وهوت دوج وبيتزا ومقبلات."
     },
     contact: {
       address: "أصفهان، شارع بروين، شارع صباحي، تقاطع سبيده كاشاني",

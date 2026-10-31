@@ -1,5 +1,5 @@
 /* ============================================================
-   رامین برگر — استایل‌ها (تک‌فایل، بدون درخواست خارجی)
+   رامی برگر — استایل‌ها (فونت تیترها از گوگل فونت می‌آید)
    ============================================================ */
 @font-face {
   font-family: "Vazirmatn";
@@ -9,16 +9,18 @@
 }
 
 :root {
-  --bg: #0c0906;
-  --surface: #161009;
-  --surface-2: #1e150b;
-  --text: #f5efe4;
-  --muted: #b9a98f;
-  --accent: #f0a832;
-  --accent-dark: #c07f1a;
-  --line: rgba(240, 168, 50, 0.16);
+  --bg: #f7ead6;
+  --surface: #fffaf0;
+  --surface-2: #fbe7d3;
+  --text: #1d0a0d;
+  --muted: #7c4b50;
+  --accent: #db001c;
+  --accent-dark: #a30016;
+  --line: rgba(219, 0, 28, 0.18);
   --radius: 18px;
   --font: "Vazirmatn", "IRANSans", Tahoma, Arial, sans-serif;
+  --font-fa-head: "Noto Kufi Arabic", "Vazirmatn", Tahoma, sans-serif;
+  --font-en-head: "Noto Sans Display", "Liberation Sans", Arial, sans-serif;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -58,9 +60,9 @@ section { position: relative; }
 .btn-primary {
   background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   color: #1a1005;
-  box-shadow: 0 8px 30px rgba(240, 168, 50, 0.35);
+  box-shadow: 0 8px 30px rgba(219, 0, 28, 0.35);
 }
-.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(240, 168, 50, 0.45); }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(219, 0, 28, 0.45); }
 .btn-ghost {
   background: transparent;
   color: var(--text);
@@ -173,7 +175,7 @@ section { position: relative; }
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 55%, #17100a 0%, var(--bg) 70%);
+  background: radial-gradient(ellipse at 50% 55%, #17100a 0%, #0a0506 70%);
 }
 .assembly-title {
   position: absolute; top: 4.5rem; inset-inline: 0; text-align: center; z-index: 3;
@@ -242,7 +244,7 @@ section { position: relative; }
 .menu-item {
   display: flex; align-items: center; gap: 1rem;
   padding: 0.95rem 0;
-  border-bottom: 1px dashed rgba(240, 168, 50, 0.14);
+  border-bottom: 1px dashed rgba(219, 0, 28, 0.14);
 }
 .menu-item:last-child { border-bottom: none; }
 .menu-item .info { flex: 1; }
@@ -269,7 +271,7 @@ section { position: relative; }
   font-family: var(--font); color: var(--text);
 }
 .base-card:hover { transform: translateY(-3px); }
-.base-card.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 10px 26px rgba(240, 168, 50, 0.18); }
+.base-card.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 10px 26px rgba(219, 0, 28, 0.22); }
 .base-card .b-name { font-weight: 700; font-size: 0.98rem; display: block; }
 .base-card .b-price { color: var(--muted); font-size: 0.88rem; }
 .extras-grid { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2rem; }
@@ -285,7 +287,7 @@ section { position: relative; }
   transition: all 0.25s ease;
 }
 .extra-chip .ep { color: var(--muted); font-size: 0.85rem; margin-inline-start: 0.4rem; }
-.extra-chip.selected { border-color: var(--accent); background: rgba(240, 168, 50, 0.12); }
+.extra-chip.selected { border-color: var(--accent); background: rgba(219, 0, 28, 0.14); }
 .extra-chip.selected .ep { color: var(--accent); }
 .builder-total {
   display: flex; align-items: center; justify-content: space-between;
@@ -302,7 +304,7 @@ section { position: relative; }
   position: fixed; top: 1rem; inset-inline-end: 1rem; z-index: 65;
   display: flex; gap: 2px;
   background: rgba(12, 9, 6, 0.72);
-  border: 1px solid rgba(240, 168, 50, 0.35);
+  border: 1px solid rgba(219, 0, 28, 0.35);
   border-radius: 999px;
   padding: 4px;
   backdrop-filter: blur(8px);
@@ -328,7 +330,7 @@ section { position: relative; }
   background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 10px 30px rgba(240, 168, 50, 0.45);
+  box-shadow: 0 10px 30px rgba(219, 0, 28, 0.45);
   transition: transform 0.25s ease;
   font-family: var(--font);
 }
@@ -379,7 +381,7 @@ section { position: relative; }
 .cart-item {
   display: flex; gap: 0.9rem; align-items: center;
   padding: 0.9rem 0;
-  border-bottom: 1px dashed rgba(240, 168, 50, 0.14);
+  border-bottom: 1px dashed rgba(219, 0, 28, 0.14);
 }
 .cart-item .ci-info { flex: 1; }
 .cart-item .ci-name { font-weight: 700; font-size: 0.98rem; }
@@ -425,10 +427,10 @@ section { position: relative; }
 
 /* ---------- فوتر ---------- */
 footer {
-  border-top: 1px solid var(--line);
+  border-top: none;
   padding: 3.2rem 1rem 2.4rem;
   text-align: center;
-  background: #080604;
+  background: linear-gradient(135deg, #db001c, #a30016);
 }
 footer .f-brand { font-size: 1.6rem; font-weight: 900; }
 footer .f-brand .accent { color: var(--accent); }
@@ -461,3 +463,77 @@ footer .f-copy { color: var(--muted); font-size: 0.8rem; margin-top: 1.4rem; opa
   .reveal { opacity: 1; transform: none; transition: none; }
   .btn, .ing-card, .base-card, .extra-chip { transition: none; }
 }
+
+/* ---------- مرحله‌ی اول رامی برگر: تیترها و برند با فونت برند ---------- */
+.hero h1, .sec-head h2, .assembly-title, .f-brand {
+  font-family: var(--font-fa-head);
+  font-weight: 900;
+}
+html[lang="en"] .hero h1, html[lang="en"] .sec-head h2, html[lang="en"] .assembly-title, html[lang="en"] .f-brand {
+  font-family: var(--font-en-head);
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+.hero h1 { color: #ffffff; text-shadow: 0 2px 24px rgba(0,0,0,0.45); }
+.btn-primary { color: #ffffff; }
+.cart-fab svg { stroke: #ffffff; }
+
+/* خوانایی متن قرمز روی پس‌زمینه‌ی تیره: قرمز روشن‌تر برای متن، قرمز رسمی برای دکمه */
+.hero-kicker, .sec-head h2 .accent, .assembly-title .accent, .menu-item .price, .builder-label, .builder-price .val, .cart-item .ci-price, .f-phone, .cart-total .val { color: #ff5a6e; }
+
+/* ---------- مرحله‌ی دوم رامی برگر: تم سفید و قرمز ---------- */
+/* تیتر هیرو: رامی قرمز، برگر سفید با حاله‌ی قرمز */
+.hero h1 .brand-rami { color: #db001c; text-shadow: 0 0 26px rgba(219, 0, 28, 0.65), 0 2px 24px rgba(0, 0, 0, 0.55); }
+.hero h1 .brand-burger { color: #ffffff; text-shadow: 0 0 22px rgba(219, 0, 28, 0.85), 0 0 4px rgba(219, 0, 28, 0.9), 0 2px 24px rgba(0, 0, 0, 0.55); }
+/* بخش‌هایی که روی ویدیوی تیره‌اند، متن‌شان سفید می‌ماند */
+.hero .tagline { color: #ffffff; }
+.scroll-hint { color: rgba(255, 255, 255, 0.85); }
+.scroll-hint .mouse { border-color: rgba(255, 255, 255, 0.85); }
+.lang-switch button { color: rgba(255, 255, 255, 0.75); }
+.lang-switch button:hover { color: #ffffff; }
+.lang-switch button.active { color: #ffffff; }
+.assembly-title { color: #ffffff; }
+.assembly-title .accent { color: #ff5a6e; }
+.stage-caption span { color: #ffffff; }
+.load-hint { color: rgba(255, 255, 255, 0.75); }
+/* کارت‌ها و سبد روی سفید: سایه‌ی ملایم قرمز، نه سنگین مشکی */
+.ing-card:hover { box-shadow: 0 20px 50px rgba(219, 0, 28, 0.14); }
+.menu-cat { box-shadow: 0 10px 34px rgba(219, 0, 28, 0.07); }
+.menu-cat-name { color: #ffffff; }
+.builder-box { box-shadow: 0 10px 34px rgba(219, 0, 28, 0.07); }
+.extra-chip { border-color: rgba(219, 0, 28, 0.25); }
+.cart-drawer { box-shadow: -10px 0 40px rgba(219, 0, 28, 0.12); }
+/* فوتر قرمز: همه‌ی متن‌ها سفید */
+footer .f-brand { color: #ffffff; }
+footer .f-info { color: rgba(255, 255, 255, 0.88); }
+footer .f-phone { color: #ffffff; }
+footer .f-copy { color: rgba(255, 255, 255, 0.72); }
+/* متن‌های قرمز روی سفید، همان قرمز رسمی‌اند */
+.sec-head h2 .accent, .menu-item .price, .builder-label, .builder-price .val, .cart-item .ci-price, .cart-total .val { color: #db001c; }
+.hero-kicker { color: #ff5a6e; }
+
+/* دکمه‌ی دوم هیرو روی ویدیوی تیره: متن و خط سفید می‌ماند */
+.hero .btn-ghost { color: #ffffff; border-color: rgba(255, 255, 255, 0.7); }
+.hero .btn-ghost:hover { border-color: #db001c; color: #ffffff; }
+
+/* ---------- مرحله‌ی سوم رامی برگر: نوار شطرنجی برند ---------- */
+.checker-strip {
+  height: 14px;
+  background: repeating-conic-gradient(#db001c 0% 25%, #fff8ec 0% 50%) 0 0 / 28px 28px;
+  border-block: 1px solid rgba(219, 0, 28, 0.25);
+}
+
+/* ---------- مرحله‌ی چهارم رامی برگر: فوتر خوانا ---------- */
+footer { padding: 3.8rem 1rem 3rem; }
+footer .f-brand { font-size: 2.3rem; letter-spacing: 0.01em; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.28); }
+footer .f-info { font-size: 1.18rem; line-height: 2; color: #ffffff; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.25); margin: 1rem 0 1.2rem; }
+footer .f-phone {
+  background: #ffffff; color: #db001c !important;
+  font-size: 1.6rem; font-weight: 900; letter-spacing: 0.02em;
+  padding: 0.65rem 1.8rem; border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+footer .f-copy { font-size: 0.98rem; color: rgba(255, 255, 255, 0.92); opacity: 1; margin-top: 1.6rem; }
+
+/* ---------- مرحله‌ی پنجم رامی برگر: کرم شیری به‌جای سفید تند ---------- */
+/* بدنه و کارت‌ها دیگر سفید خالص نیستند؛ کرم گرم و ملایم‌اند تا نورشان چشم را اذیت نکند */
